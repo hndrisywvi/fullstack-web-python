@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login & Register</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div id="login" class="form">
+        <h2>Login</h2>
+        <form action="/login" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Login">
+        </form>
+        <p>Belum punya akun? <a href="#" onclick="toggleForm('register')">Register</a></p>
+    </div>
+
+    <div id="register" class="form" style="display: none;">
+        <h2>Register</h2>
+        <form action="/register" method="post">
+            <label for="new-username">Username:</label>
+            <input type="text" id="new-username" name="new-username" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="new-password">Password:</label>
+            <input type="password" id="new-password" name="new-password" required>
+            <input type="submit" value="Register">
+        </form>
+        <p>Sudah punya akun? <a href="#" onclick="toggleForm('login')">Login</a></p>
+    </div>
+</div>
+
+<script>
+function toggleForm(formId) {
+    var loginForm = document.getElementById('login');
+    var registerForm = document.getElementById('register');
+
+    if (formId === 'register') {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+    } else {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+    }
+}
+</script>
+
+</body>
+</html>
