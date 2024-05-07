@@ -1,13 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List akun</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css') }}">
 </head>
 <body>
-    <div>
-        <p>ini adalah halaman dashoard</p>
-    </div>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <table class="styled-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>Create at</th>
+        <th>Action</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- looping disini -->
+      {% for i in data %}
+      <tr>
+        <td>{{i.0}}</td>
+        <td>{{i.1}}</td>
+        <td id="username{{i.0}}">{{i.2}}</td>
+        <td>{{i.3}}</td>
+        <td>{{i.4}}</td>
+        <td>{{i.5}}</td>
+        <td>{{i.6}}</td>
+        <td>
+          <button onclick="editUsername('{{i.0}}', '{{i.2}}')">Edit</button>
+          <form id="editForm{{i.0}}" action="{{ url_for('update_username') }}" method="POST" style="display: none;">
+            <input type="hidden" name="id" value="{{i.0}}">
+            <input type="text" name="new_username" id="newUsername{{i.0}}">
+            <button type="submit">Save</button>
+          </form>
+        </td>
+        <td>
+          <form action="{{url_for('delete')}}" method="POST">
+            <input type="hidden" name="id" value="{{i.0}}">
+            <button type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    function editUsername(userId, currentUsername) {
+      var newUsername = prompt("Enter new username:", currentUsername);
+      if (newUsername !== null) {
+        document.getElementById('newUsername' + userId).value = newUsername;
+        document.getElementById('editForm' + userId).submit();
+      }
+    }
+  </script>
 </body>
 </html>

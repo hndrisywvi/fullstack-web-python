@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 import app as service
+import datastore
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
@@ -28,13 +30,15 @@ def register():
     name = request.form["name"]
     username = request.form["reg_username"]
     password = request.form["reg_password"]
-    confirm_password = request.form["confirm_password"]
+    role = request.form["role"]
+    timestamp = request.form["timestamp"]
 
-    if password != confirm_password:
-        flash("Passwords do not match")
+    existing_user, _ = datastore.get_user_by_username(username)
+    if existing_user:
+        flash("Username already exists. Please choose a different username.")
         return redirect(url_for('index'))
 
-    success, error = service.register(name, username, password)
+    success, error = service.register(name, username, password, role)
     if error:
         flash(f"Registration failed: {error}")
     else:
@@ -43,7 +47,40 @@ def register():
 
 @app.route("/dashboard")
 def dashboard():
-    return render_template('dashboard.html')
+    # keyword = request.form["keyword"]
+    # page = request.form["page"]
+    # limit = request.form["limit"]
+    
+    res, err = service.getListUserAccount(None, 1, 1)
+    if err != None:
+        print(err)
+    
+    if res in (None, []):
+        msg = flash("data not found")
+        return render_template("dashboard.html", msg = msg)
+    
+    return render_template('dashboard.html', data=res)
+
+@app.route("/delete", methods=["POST"])
+def delete():
+    id = request.form.get("id")
+    success, error = service.delete(id)
+    if error:
+        flash(f"Delete error: {error}")
+    else:
+        flash("Data successfully deleted")
+    return redirect(url_for('dashboard'))
+
+@app.route("/update_username", methods=["POST"])
+def update_username():
+    id = request.form.get("id")
+    new_username = request.form.get("new_username")
+    success, error = service.update_username(id, new_username)
+    if error:
+        flash(f"Update username error: {error}")
+    else:
+        flash("Username updated successfully")
+    return redirect(url_for('dashboard'))
 
 if __name__ == "__main__":
     app.run()
